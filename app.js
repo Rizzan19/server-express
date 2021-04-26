@@ -1,38 +1,15 @@
-export default (express, bodyParser, createReadStream, crypto, http, CORS, writeFileSync, User, UserController, LOGIN, puppeteer) => {
+  export default (express, bodyParser, createReadStream, crypto, http) => {
     const app = express();
-    const path = import.meta.url.substring(7);
-    
+
     app
- 
- 
-    .all('/req/', (req, res) => {
-        const addr = req.method === 'POST' ? req.body.addr : req.query.addr;
+    .use((r, res, next) => r.res.set({
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST,PUT,PATCH,OPTIONS,DELETE"}) && next())
+    .use(bodyParser.urlencoded({ extended: true }))
+    .get('/login/', (req, res) => res.send('bee_joo'))   
+    .get('/code/', (req, res) => fs.createReadStream(import.meta.url.substring(7)).pipe(res))
+    .get('/sha1/:input/', r => res.send(crypto.createHash('sha1').update(r.params.input).digest('hex')))
+    .all('/*', r => r.res.send('bee_joo'));
 
-        http.get(addr, (r, b = '') => {
-            r
-            .on('data', d => b += d)
-            .on('end', () => res.send(b));
-        });
-    })
- 
-
-    })
-    .get('/login/', (req, res) => res.send(LOGIN || 'rizzan18'))  
-    .get('/sha1/:input', r => {
-        const shasum = crypto.createHash('sha1');
-        shasum.update(r.params.input);
-        r.res.send(shasum.digest('hex')); 
-    })
-       
-  
-    .get('/code/', (req, res) => {
-        res.set({ 'Content-Type': 'text/plain; charset=utf-8' });
-        createReadStream(path).pipe(res);
-    })
-    
-  
- 
-   
-   
-   
     return app;
+}
