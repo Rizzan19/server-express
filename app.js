@@ -1,5 +1,3 @@
- lines (21 sloc)  924 Bytes
-  
 export default (express, bodyParser, fs, crypto, http) => {
     const app = express();
 
